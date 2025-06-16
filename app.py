@@ -58,11 +58,13 @@ st.markdown(
 st.markdown('<div class="main-title">📝 ブログ本文抽出＆Word変換ツール</div>', unsafe_allow_html=True)
 st.markdown('<div class="desc">URLを入力するだけで、記事本文だけを自動抽出しWord形式でダウンロードできます。不要な冒頭・末尾の行やおすすめ記事もカット！</div>', unsafe_allow_html=True)
 
-# --- サイドバーに設定 ---
-st.sidebar.header("抽出設定")
 url = st.text_input("ブログ記事のURLを入力してください")
-head_cut = st.sidebar.number_input("冒頭で削除する行数", min_value=0, max_value=100, value=0)
-tail_cut = st.sidebar.number_input("末尾で削除する行数", min_value=0, max_value=100, value=0)
+# 行数指定をメインエリアのURL入力欄の直下に移動
+col1, col2 = st.columns(2)
+with col1:
+    head_cut = st.number_input("冒頭で削除する行数", min_value=0, max_value=100, value=0)
+with col2:
+    tail_cut = st.number_input("末尾で削除する行数", min_value=0, max_value=100, value=0)
 
 # 除外したいキーワード例
 exclude_keywords = [
