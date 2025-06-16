@@ -11,6 +11,10 @@ url = st.text_input("ブログ記事のURLを入力してください")
 exclude_keywords = [
     "著者紹介", "店舗情報", "おすすめ記事", "関連記事", "この記事を書いた人", "プロフィール", "運営者情報", "PR", "広告", "シェア", "SNS", "コメント", "前の記事", "次の記事", "この記事をシェア", "人気記事", "タグ", "カテゴリー", "この記事を読んだ人はこんな記事も読んでいます"]
 
+# 行数指定のUIを追加
+head_cut = st.number_input("冒頭で削除する行数", min_value=0, max_value=50, value=0)
+tail_cut = st.number_input("末尾で削除する行数", min_value=0, max_value=50, value=0)
+
 if st.button("Word形式に変換"):
     if not url:
         st.warning("URLを入力してください。")
@@ -46,14 +50,23 @@ if st.button("Word形式に変換"):
             for line in lines:
                 if not any(kw in line for kw in exclude_keywords):
                     filtered_lines.append(line)
+
+            # ユーザー指定の冒頭・末尾カット
+            # 例: head_cut=3, tail_cut=5 → 先頭3行と末尾5行を除外
+            if head_cut > 0 or tail_cut > 0:
+                filtered_lines = filtered_lines[head_cut:len(filtered_lines)-tail_cut if tail_cut != 0 else None]
+
             filtered_content = "\n".join(filtered_lines).strip()
 
             if not filtered_content:
                 filtered_content = "（本文が抽出できませんでした）"
 
             st.success("本文抽出に成功しました。タイトルと本文を表示します。")
-            st.markdown(f"**【タイトル】**\n{title}")
-            content = st.text_area("本文（編集可）", filtered_content, height=400)
+            # タイトル編集欄
+            editable_title = st.text_input("タイトル（編集可）", value=title)
+            # 本文欄の初期値にタイトルを含める
+            content_with_title = f"【タイトル】{editable_title}\n{filtered_content}"
+            content = st.text_area("本文＋タイトル（編集・一括コピー可）", content_with_title, height=400)
 
             # Word出力用処理
             from io import BytesIO
@@ -62,17 +75,15 @@ if st.button("Word形式に変換"):
 
             def sanitize_filename(name):
                 # ファイル名に使えない文字を除去
-                return re.sub(r'[\\/:*?"<>|]', '', name)
+                return re.sub(r'[\\/:*?\"<>|]', '', name)
 
             if st.button("Wordファイルをダウンロード"):
                 doc = Document()
-                doc.add_paragraph(f"【タイトル】{title}")
-                doc.add_paragraph("")
                 doc.add_paragraph(content)
                 buf = BytesIO()
                 doc.save(buf)
                 buf.seek(0)
-                safe_title = sanitize_filename(title) or "記事"
+                safe_title = sanitize_filename(editable_title) or "記事"
                 st.download_button(
                     label="Wordファイルをダウンロード",
                     data=buf,

@@ -1,0 +1,6 @@
+[build]
+  command = "streamlit run app.py"
+  publish = "."
+
+[build.environment]
+  PIP_EXTRA_INDEX_URL = "https://pypi.org/simple"
