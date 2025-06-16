@@ -12,8 +12,8 @@ exclude_keywords = [
     "著者紹介", "店舗情報", "おすすめ記事", "関連記事", "この記事を書いた人", "プロフィール", "運営者情報", "PR", "広告", "シェア", "SNS", "コメント", "前の記事", "次の記事", "この記事をシェア", "人気記事", "タグ", "カテゴリー", "この記事を読んだ人はこんな記事も読んでいます"]
 
 # 行数指定のUIを追加
-head_cut = st.number_input("冒頭で削除する行数", min_value=0, max_value=50, value=0)
-tail_cut = st.number_input("末尾で削除する行数", min_value=0, max_value=50, value=0)
+head_cut = st.number_input("冒頭で削除する行数", min_value=0, max_value=100, value=0)
+tail_cut = st.number_input("末尾で削除する行数", min_value=0, max_value=100, value=0)
 
 if st.button("Word形式に変換"):
     if not url:
